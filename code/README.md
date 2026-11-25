@@ -73,4 +73,6 @@ On the robot set `robot:=pioneerX` to the robot's name.
 | `trajectories.py` | builds trajectories of all methods |
 | `evaluation.py` | time matching, rigid alignment, error metrics |
 | `plots.py`, `analyze.py` | figures, `results.md`, CLI |
-| `node.py` | ROS 2 node |
+| `node.py` | ROS 2 node (`beacon_node`) |
+| `live_plot.py`, `live_view.py` | ROS 2 node `live_plot`: live matplotlib window |
+| `styles.py` | line styles shared by report and live plots |

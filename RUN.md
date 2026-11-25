@@ -55,6 +55,26 @@ The node:
 
 The calibrated and velocity odometry appear only in the report written on Ctrl+C.
 
+## 3a. Live plot (matplotlib)
+
+A separate node that opens a window and redraws every 0.2 s. It computes
+everything itself, so it does not need `beacon_node` (both can run together).
+
+```bash
+ros2 run beacon_localization live_plot --ros-args -p robot:=pioneer4 \
+    -p tag_height:=0.3          # optional: -p refresh_period:=0.2
+```
+
+Panels:
+- **global frame** – anchors, `tag_pose` and our beacon LS path;
+- **odometry** – robot `odom` and our ticks / calibrated ticks / velocity
+  odometry, all in the robot start frame;
+- **bottom** – distance between our beacon fix and `tag_pose` over time.
+
+The title line shows the latest fix, `tag_pose` and their distance. Close the
+window or press Ctrl+C to stop. Start it before `ros2 bag play`, or on the robot
+replace `pioneer4` with the robot name (section 4).
+
 ## 4. Live on a robot (example: pioneer 2)
 
 **Connect.** Same network as the robot, then:
@@ -82,6 +102,12 @@ If `interface show` works, the PC already has `decawave_msgs`: build with
 cd code
 ros2 run beacon_localization beacon_node --ros-args -p robot:=pioneer2 \
     -p tag_height:=0.3 -p output_dir:=results_pioneer2
+```
+
+**Live plot** (instead of or next to the node above):
+
+```bash
+ros2 run beacon_localization live_plot --ros-args -p robot:=pioneer2 -p tag_height:=0.3
 ```
 
 **Watch other topics** (each in its own sourced terminal, optional):
@@ -124,3 +150,4 @@ On Ctrl+C it saves `odom_paths.png`.
 | topics listed, node prints nothing | wrong `robot:=` name |
 | `odom` arrives, `tag_status` does not | our `decawave_msgs` differs from the robot's – use theirs (`--packages-skip decawave_msgs`) or send `ros2 topic info -v /pioneer2/tag_status` |
 | `ModuleNotFoundError: decawave_msgs` | `source code/install/setup.bash` missing |
+| `live_plot`: no window opens | no display (e.g. over ssh) or `MPLBACKEND=Agg` set – run it on your PC with a desktop |

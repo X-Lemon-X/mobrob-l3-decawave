@@ -20,6 +20,7 @@ setup(
         "console_scripts": [
             "beacon_node = beacon_localization.node:main",
             "analyze = beacon_localization.analyze:main",
+            "live_plot = beacon_localization.live_plot:main",
         ],
     },
 )
