@@ -36,3 +36,20 @@ linked pages; this file is the short version.
 **Found**
 - Lab 2 calibration (r_eff ≈ 95.2 mm) transfers: loop closure drops from
   12–43 cm to 0.5–8 cm. Q5 answered.
+
+## 2026-11-25 — Live plot, cross-check, report complete
+
+**Done**
+- `live_plot` node (matplotlib, all methods live).
+- `crosscheck.py`: odometry as second reference (lag, outliers, gaps) in `results.md`.
+- `example_figure.py` → `report/figures/trilateration_example.png`.
+- Report: sections 3–6 rewritten (cross-check, T2.3, discussion, conclusions).
+
+**Found**
+- `tag_pose` lags 0.2–0.5 s behind odometry and causes the ~1 m differences;
+  our fixes stay < 0.5 m from odometry → [evaluation.md](knowledge/evaluation.md).
+- Gaps of 1–10 s without new ranges (tag side).
+
+**Next**
+- Own runs on pioneer 2; measure tag height (Q1) and offset (Q3).
+- Optional: odometry + UWB fusion (Kalman filter).

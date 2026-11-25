@@ -29,6 +29,23 @@ Static spread = RMS distance to the mean position before the robot starts moving
 | odom (ours, ticks calibrated) | 573 | 10.0 | 0.000 | 0.054 |
 | odom (ours, velocity) | 573 | 10.0 | 0.000 | 0.068 |
 
+Cross-check against `odom (ours, ticks calibrated)` (rigid-aligned to each method; lag > 0 means the method is behind the odometry) [m]:
+
+| method | samples | RMSE | p95 | max | best lag [s] | RMSE at best lag |
+|---|---|---|---|---|---|---|
+| tag_pose (built-in) | 200 | 0.188 | 0.328 | 1.012 | +0.20 | 0.171 |
+| beacon LS (2d) | 200 | 0.165 | 0.300 | 0.488 | -0.25 | 0.138 |
+
+Gaps without a new range measurement (> 0.5 s):
+
+| start [s] | duration [s] | robot drove [m] |
+|---|---|---|
+| -0.0 | 7.8 | 0.27 |
+| 7.8 | 4.0 | 1.38 |
+| 15.1 | 5.0 | 0.68 |
+| 25.4 | 10.0 | 0.84 |
+| 40.4 | 3.0 | 0.64 |
+
 ## loc_square_left
 
 ![trajectories](loc_square_left_xy.png)
@@ -56,6 +73,22 @@ Static spread = RMS distance to the mean position before the robot starts moving
 | odom (ours, ticks calibrated) | 350 | 10.0 | 0.000 | 0.077 |
 | odom (ours, velocity) | 350 | 10.0 | 0.000 | 0.074 |
 
+Cross-check against `odom (ours, ticks calibrated)` (rigid-aligned to each method; lag > 0 means the method is behind the odometry) [m]:
+
+| method | samples | RMSE | p95 | max | best lag [s] | RMSE at best lag |
+|---|---|---|---|---|---|---|
+| tag_pose (built-in) | 34 | 0.230 | 0.529 | 0.813 | +0.50 | 0.200 |
+| beacon LS (2d) | 34 | 0.149 | 0.265 | 0.290 | -0.40 | 0.133 |
+
+Gaps without a new range measurement (> 0.5 s):
+
+| start [s] | duration [s] | robot drove [m] |
+|---|---|---|
+| -0.0 | 1.4 | 0.00 |
+| 1.4 | 5.0 | 0.53 |
+| 9.4 | 10.0 | 1.85 |
+| 19.4 | 10.0 | 1.71 |
+
 ## loc_square_right
 
 ![trajectories](loc_square_right_xy.png)
@@ -82,3 +115,20 @@ Static spread = RMS distance to the mean position before the robot starts moving
 | odom (ours, ticks) | 314 | 10.0 | 0.000 | 0.121 |
 | odom (ours, ticks calibrated) | 314 | 10.0 | 0.000 | 0.005 |
 | odom (ours, velocity) | 314 | 10.0 | 0.000 | 0.017 |
+
+Cross-check against `odom (ours, ticks calibrated)` (rigid-aligned to each method; lag > 0 means the method is behind the odometry) [m]:
+
+| method | samples | RMSE | p95 | max | best lag [s] | RMSE at best lag |
+|---|---|---|---|---|---|---|
+| tag_pose (built-in) | 143 | 0.142 | 0.250 | 0.578 | +0.25 | 0.128 |
+| beacon LS (2d) | 144 | 0.134 | 0.237 | 0.428 | -0.10 | 0.131 |
+
+Gaps without a new range measurement (> 0.5 s):
+
+| start [s] | duration [s] | robot drove [m] |
+|---|---|---|
+| 0.0 | 1.8 | 0.00 |
+| 1.8 | 4.0 | 1.04 |
+| 8.8 | 2.0 | 0.54 |
+| 15.2 | 1.0 | 0.40 |
+| 19.7 | 1.0 | 0.23 |

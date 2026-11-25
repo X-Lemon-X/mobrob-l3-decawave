@@ -1,9 +1,11 @@
 # Code
 
-Three ROS 2 packages (colcon workspace = this folder):
+Four ROS 2 packages (colcon workspace = this folder):
 
 - `beacon_localization/` — trilateration from UWB ranges, wheel odometry,
   evaluation and plots. The core is plain Python and also runs without ROS.
+- `beacon_live_plot/` — node `live_plot`: live matplotlib window with all
+  methods; uses the localization and odometry code of `beacon_localization`.
 - `decawave_msgs/` — message definitions reconstructed from the lab bags
   (`Anchor`, `AnchorArray`, `Tag`). Needed for `ros2 bag play` and for the
   node when the original package is not installed. **Do not build it on a
@@ -73,6 +75,7 @@ On the robot set `robot:=pioneerX` to the robot's name.
 | `trajectories.py` | builds trajectories of all methods |
 | `evaluation.py` | time matching, rigid alignment, error metrics |
 | `plots.py`, `analyze.py` | figures, `results.md`, CLI |
+| `crosscheck.py` | second reference: lag and errors against wheel odometry, measurement gaps |
+| `example_figure.py` | report figure of one trilateration step |
 | `node.py` | ROS 2 node (`beacon_node`) |
-| `live_plot.py`, `live_view.py` | ROS 2 node `live_plot`: live matplotlib window |
 | `styles.py` | line styles shared by report and live plots |

@@ -1,8 +1,9 @@
 # How to run
 
-Three ROS 2 packages live in [code/](code/) (the colcon workspace):
-`beacon_localization` (our node + analysis), `decawave_msgs` (message
-definitions rebuilt from the bags) and `pioneer_odom` (original lab 2 node).
+Four ROS 2 packages live in [code/](code/) (the colcon workspace):
+`beacon_localization` (our node + analysis), `beacon_live_plot` (live
+matplotlib view), `decawave_msgs` (message definitions rebuilt from the bags)
+and `pioneer_odom` (original lab 2 node).
 Details and module map: [code/README.md](code/README.md).
 
 ## 1. Offline analysis (no ROS needed)
@@ -61,7 +62,7 @@ A separate node that opens a window and redraws every 0.2 s. It computes
 everything itself, so it does not need `beacon_node` (both can run together).
 
 ```bash
-ros2 run beacon_localization live_plot --ros-args -p robot:=pioneer4 \
+ros2 run beacon_live_plot live_plot --ros-args -p robot:=pioneer4 \
     -p tag_height:=0.3          # optional: -p refresh_period:=0.2
 ```
 
@@ -107,7 +108,7 @@ ros2 run beacon_localization beacon_node --ros-args -p robot:=pioneer2 \
 **Live plot** (instead of or next to the node above):
 
 ```bash
-ros2 run beacon_localization live_plot --ros-args -p robot:=pioneer2 -p tag_height:=0.3
+ros2 run beacon_live_plot live_plot --ros-args -p robot:=pioneer2 -p tag_height:=0.3
 ```
 
 **Watch other topics** (each in its own sourced terminal, optional):

@@ -7,6 +7,7 @@ import numpy as np
 
 from .bag_reader import BagData, read_bag
 from .config import AppConfig
+from .crosscheck import crosscheck, measurement_gaps
 from .evaluation import align_to, error_stats, errors_against, static_spread
 from .plots import plot_errors, plot_trajectories
 from .trajectories import all_trajectories
@@ -63,7 +64,28 @@ def _info_rows(trajectories: dict, still_until: float) -> list:
     return rows
 
 
-def _bag_report(name: str, bag: BagData, trajectories: dict, errors: dict) -> str:
+def _crosscheck_section(trajectories: dict, config: AppConfig) -> str:
+    cfg = config.evaluation
+    odom = trajectories[cfg.crosscheck_odometry]
+    uwb = [t for t in trajectories.values() if t.frame == "global"]
+    rows = []
+    for traj in uwb:
+        c = crosscheck(traj, odom, cfg)
+        rows.append([c.name, c.samples] + [_fmt(v) for v in (c.rmse, c.p95, c.max)]
+                    + [f"{c.best_lag:+.2f}", _fmt(c.rmse_at_best_lag)])
+    beacon = next(t for t in uwb if t.name != REFERENCE)
+    gaps = measurement_gaps(beacon, odom, cfg.min_gap)
+    gap_rows = [[f"{g.start:.1f}", f"{g.duration:.1f}", f"{g.odom_distance:.2f}"] for g in gaps]
+    return "\n\n".join([
+        f"Cross-check against `{cfg.crosscheck_odometry}` (rigid-aligned to each method; "
+        "lag > 0 means the method is behind the odometry) [m]:",
+        _table(rows, ["method", "samples", "RMSE", "p95", "max", "best lag [s]", "RMSE at best lag"]),
+        f"Gaps without a new range measurement (> {cfg.min_gap} s):",
+        _table(gap_rows, ["start [s]", "duration [s]", "robot drove [m]"]) if gap_rows else "none",
+    ])
+
+
+def _bag_report(name: str, bag: BagData, trajectories: dict, errors: dict, config: AppConfig) -> str:
     still_until = _start_of_motion(bag)
     still_for = still_until - bag.joint_states[0].stamp
     return "\n\n".join([
@@ -75,6 +97,7 @@ def _bag_report(name: str, bag: BagData, trajectories: dict, errors: dict) -> st
         f"moving ({still_for:.1f} s). Closure = |end - start|.",
         _table(_info_rows(trajectories, still_until),
                ["method", "samples", "rate [Hz]", "static spread [m]", "closure [m]"]),
+        _crosscheck_section(trajectories, config),
     ])
 
 
@@ -87,7 +110,7 @@ def analyze_bag(name: str, bag: BagData, config: AppConfig) -> str:
     out_dir = config.evaluation.output_dir
     plot_trajectories(trajectories, _anchors(bag), name, os.path.join(out_dir, f"{name}_xy.png"))
     plot_errors(errors, reference.t[0], name, os.path.join(out_dir, f"{name}_error.png"))
-    return _bag_report(name, bag, trajectories, errors)
+    return _bag_report(name, bag, trajectories, errors, config)
 
 
 def parse_args():

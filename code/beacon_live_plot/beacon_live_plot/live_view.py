@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 
 import matplotlib.pyplot as plt
 
-from .styles import BEACON_STYLE, style_for as _style
+from beacon_localization.styles import BEACON_STYLE, style_for as _style
 
 TAG_POSE = "tag_pose (built-in)"
 BEACON = "beacon LS"

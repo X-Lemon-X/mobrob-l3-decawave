@@ -1,6 +1,6 @@
 """ROS 2 node: live matplotlib view of all localization methods.
 
-  ros2 run beacon_localization live_plot --ros-args -p robot:=pioneer4
+  ros2 run beacon_live_plot live_plot --ros-args -p robot:=pioneer4
 
 Computes everything itself (beacon LS and the three wheel odometries), so it
 does not need beacon_node. ROS runs in a background thread, the plot in the
@@ -17,11 +17,12 @@ from rclpy.executors import ExternalShutdownException, SingleThreadedExecutor
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
-from .beacon_localizer import BeaconLocalizer
-from .config import AppConfig
+from beacon_localization.beacon_localizer import BeaconLocalizer
+from beacon_localization.config import AppConfig
+from beacon_localization.messages import decode_anchor_array, decode_joint_state, decode_odometry, decode_tag
+from beacon_localization.odometry import EncoderOdometry, VelocityOdometry
+
 from .live_view import BEACON, ROBOT_ODOM, TAG_POSE, WHEEL_ODOMS, LiveData, LiveView
-from .messages import decode_anchor_array, decode_joint_state, decode_odometry, decode_tag
-from .odometry import EncoderOdometry, VelocityOdometry
 
 
 def _to_start_frame(pose, start) -> tuple:
@@ -64,7 +65,7 @@ class LivePlotNode(Node):
         }
 
     def _subscribe(self) -> None:
-        r = self.robot  # raw=True: decoded from bytes, see node.py
+        r = self.robot  # raw=True: decoded from bytes, see beacon_localization/node.py
         self.create_subscription(AnchorArray, f"/{r}/tag_status", self.on_status, 10, raw=True)
         self.create_subscription(Tag, f"/{r}/tag_pose", self.on_tag, 10, raw=True)
         self.create_subscription(JointState, f"/{r}/joint_states", self.on_joints, 10, raw=True)

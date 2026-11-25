@@ -46,6 +46,10 @@ class EvaluationConfig:
     min_reference_quality: float = 0.0  # tag_pose samples below are ignored
     max_sync_gap: float = 0.3  # [s] max time distance when matching samples
     output_dir: str = "results"
+    crosscheck_odometry: str = "odom (ours, ticks calibrated)"  # second reference
+    max_lag: float = 1.0  # [s] lag search range against odometry
+    lag_step: float = 0.05  # [s]
+    min_gap: float = 0.5  # [s] longer time without a new fix counts as a gap
 
 
 @dataclass

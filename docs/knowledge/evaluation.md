@@ -44,3 +44,19 @@ Full tables and figures: [`report/results/results.md`](../../report/results/resu
   path. Static spread: ours 0.072 m vs `tag_pose` 0.063 m in
   `loc_square_right`, 0.038 vs 0.005 m in `loc_square_left`.
 - Odometry looks best only because of the best-fit alignment.
+
+## Cross-check against wheel odometry (`crosscheck.py`, 2026-11-25)
+
+Second reference: calibrated tick odometry (independent of UWB, no gaps).
+Each UWB trajectory is rigid-aligned to it; the odometry is also shifted in time
+(±1 s, 0.05 s steps) to find the best-fitting lag.
+
+| Bag | `tag_pose` max / lag | beacon LS max / lag |
+|---|---|---|
+| `loc_5m_ret` | 1.012 m / +0.20 s | 0.488 m / −0.25 s |
+| `loc_square_left` | 0.813 m / +0.50 s | 0.290 m / −0.40 s |
+| `loc_square_right` | 0.578 m / +0.25 s | 0.428 m / −0.10 s |
+
+`tag_pose` lags and has the large outliers; 17 of 19 beacon−tag_pose
+differences > 0.5 m come < 1 s after a measurement gap (gaps 1–10 s, whole
+seconds, robot drives up to 1.85 m meanwhile).
