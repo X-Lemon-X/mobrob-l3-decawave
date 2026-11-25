@@ -7,7 +7,7 @@ import numpy as np
 from .bag_reader import BagData
 from .beacon_localizer import BeaconLocalizer
 from .config import AppConfig
-from .odometry import EncoderOdometry
+from .odometry import EncoderOdometry, VelocityOdometry
 
 
 @dataclass
@@ -45,10 +45,21 @@ def robot_odom_trajectory(bag: BagData) -> Trajectory:
     return _make("odom (robot)", [(p.stamp, p.x, p.y) for p in bag.odom], "odom")
 
 
-def encoder_odom_trajectory(bag: BagData, config: AppConfig) -> Trajectory:
-    odometry = EncoderOdometry(config.odometry)
+def _wheel_odom_trajectory(bag: BagData, name: str, odometry) -> Trajectory:
     poses = [odometry.update(msg) for msg in bag.joint_states]
-    return _make("odom (ours, encoders)", [(p.stamp, p.x, p.y) for p in poses], "odom")
+    return _make(name, [(p.stamp, p.x, p.y) for p in poses], "odom")
+
+
+def wheel_odom_trajectories(bag: BagData, config: AppConfig) -> list:
+    """Lab 2 odometry: ticks (nominal and calibrated radius) and wheel velocities."""
+    cfg = config.odometry
+    return [
+        _wheel_odom_trajectory(bag, "odom (ours, ticks)", EncoderOdometry(cfg)),
+        _wheel_odom_trajectory(
+            bag, "odom (ours, ticks calibrated)", EncoderOdometry(cfg, cfg.tick_calibration)
+        ),
+        _wheel_odom_trajectory(bag, "odom (ours, velocity)", VelocityOdometry(cfg)),
+    ]
 
 
 def all_trajectories(bag: BagData, config: AppConfig) -> dict:
@@ -56,6 +67,6 @@ def all_trajectories(bag: BagData, config: AppConfig) -> dict:
         tag_pose_trajectory(bag, config),
         beacon_trajectory(bag, config),
         robot_odom_trajectory(bag),
-        encoder_odom_trajectory(bag, config),
+        *wheel_odom_trajectories(bag, config),
     ]
     return {t.name: t for t in trajectories}

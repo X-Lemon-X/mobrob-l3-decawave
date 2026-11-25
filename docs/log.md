@@ -25,3 +25,14 @@ linked pages; this file is the short version.
 - Measure tag height and offset on the robot (Q1, Q3).
 - Check `decawave_msgs` on the robot (Q2) and run the node live.
 - Record own runs if possible; fill authors and discussion in the report.
+
+## 2026-11-25 — Lab 2 odometry comparison
+
+**Done**
+- Read lab 2 code and report (`mobrob-l2-odom`). Added velocity-based odometry
+  (version B) and radius-calibrated tick odometry to the comparison; re-ran
+  `results/` and `results_3d/`; updated report sections 2, 4, 5.
+
+**Found**
+- Lab 2 calibration (r_eff ≈ 95.2 mm) transfers: loop closure drops from
+  12–43 cm to 0.5–8 cm. Q5 answered.

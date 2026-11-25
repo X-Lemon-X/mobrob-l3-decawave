@@ -28,6 +28,9 @@ class OdometryConfig:
     counter_modulo: int = 65536  # encoder counter wraps at 16 bits
     wheel_radius: float = 0.0975  # [m]
     wheel_base: float = 0.325  # [m] distance between wheel contact points
+    # Lab 2: ticks overestimate distance by 2.4 % vs /odom -> effective radius 95.2 mm
+    tick_calibration: float = 1.0 / 1.0245
+    velocity_to_mps: float = 0.001  # joint_states.velocity is linear wheel speed in mm/s
     left_index: int = 0
     right_index: int = 1
 

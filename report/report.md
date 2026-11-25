@@ -56,10 +56,17 @@ the previous fix; with fewer no fix is produced. Fixes with residual RMS > 0.5 m
 are rejected. An optional 3D mode estimates z too, bounded to z < 1.55 m (tag
 below the anchors) to resolve the mirror ambiguity.
 
-**Own odometry.** Differential drive from the 16-bit encoder counters in
-`joint_states` (lab 2): Δφ = Δticks · 2π / (4·500·38.3), Δs = r·Δφ (r = 0.0975 m),
+**Own odometry (from lab 2).** Differential drive, midpoint integration:
 Δs = (Δs_R + Δs_L)/2, Δθ = (Δs_R − Δs_L)/b (b = 0.325 m),
 x += Δs cos(θ + Δθ/2), y += Δs sin(θ + Δθ/2), θ += Δθ.
+The wheel displacements Δs_L, Δs_R are computed in three ways:
+
+- *ticks*: from the 16-bit encoder counters, Δs = r · Δticks · 2π / (4·500·38.3),
+  with the measured r = 0.0975 m;
+- *ticks calibrated*: the same with the effective rolling radius found in lab 2
+  (ticks overestimated distance by 2.4 %, r_eff = 0.0975 / 1.0245 ≈ 0.0952 m);
+- *velocity*: from the linear wheel speeds in `joint_states.velocity` (mm/s),
+  Δs = v · Δt; no radius is needed.
 
 ## 3. Evaluation method
 
@@ -77,11 +84,15 @@ Full tables and figures for each bag: [results/results.md](results/results.md).
 
 RMSE to `tag_pose` [m]:
 
-| Bag | our beacon LS (2D) | robot `odom` | our odometry |
-|---|---|---|---|
-| `loc_5m_ret` | 0.278 | 0.217 | 0.216 |
-| `loc_square_left` | 0.315 | 0.242 | 0.226 |
-| `loc_square_right` | 0.200 | 0.154 | 0.149 |
+| Bag | our beacon LS (2D) | robot `odom` | ours: ticks | ours: ticks calibrated | ours: velocity |
+|---|---|---|---|---|---|
+| `loc_5m_ret` | 0.278 | 0.217 | 0.216 | 0.188 | 0.206 |
+| `loc_square_left` | 0.315 | 0.242 | 0.226 | 0.229 | 0.240 |
+| `loc_square_right` | 0.200 | 0.154 | 0.149 | 0.142 | 0.153 |
+
+Closure |end − start| [m] (5m_ret / square_left / square_right):
+robot `odom` 0.340 / 0.032 / 0.052; ticks 0.432 / 0.200 / 0.121;
+ticks calibrated 0.054 / 0.077 / 0.005; velocity 0.068 / 0.074 / 0.017.
 
 Sensitivity of our algorithm (RMSE [m], 5m_ret / square_left / square_right):
 h = 0.0 m: 0.293 / 0.316 / 0.202; h = 0.3 m: 0.278 / 0.315 / 0.200;
@@ -108,6 +119,11 @@ soft-L1 loss: 0.292 / 0.301 / 0.208.
   with the best possible rigid transform over the whole run; this hides most of
   its drift. Beacon localization needs no alignment and its error does not grow
   with distance travelled.
+- The radius calibration from lab 2 carries over to this robot: with it the
+  tick odometry closes the loops to 0.5–8 cm instead of 12–43 cm, and the
+  velocity version (which uses the robot's own calibration) behaves the same.
+  Against `tag_pose`, all odometry variants differ by only a few cm, because
+  the rigid alignment absorbs most of the scale error.
 - The low and irregular measurement rate (1.2 Hz in `loc_square_left`, with a gap
   covering a whole side of the square) is the main weakness of the UWB system;
   odometry is available at 10 Hz. Combining both (e.g. a Kalman filter) would

@@ -1,7 +1,14 @@
 # Encoder odometry (`beacon_localization/odometry.py`)
 
-Differential-drive dead reckoning from `joint_states.position` (16-bit
-encoder counters), ported from lab 2 (`mobrob-l2-odom`).
+Differential-drive dead reckoning from `joint_states`, ported from lab 2
+(`mobrob-l2-odom`, `pioneer_odom/odom.py` and `report/report.md`). Three variants
+are compared:
+
+- `EncoderOdometry(cfg)` – version A, ticks with measured r = 97.5 mm ("odom (ours, ticks)").
+- `EncoderOdometry(cfg, cfg.tick_calibration)` – ticks with lab 2 calibration
+  1/1.0245, r_eff ≈ 95.2 mm ("odom (ours, ticks calibrated)").
+- `VelocityOdometry(cfg)` – version B, `joint_states.velocity` is the linear
+  wheel speed in **mm/s** (found in lab 2), Δs = v·Δt; no radius needed.
 
 ## Model
 - Tick delta with 16-bit wrap: `((now - before + 32768) mod 65536) - 32768`.
@@ -21,5 +28,15 @@ encoder counters), ported from lab 2 (`mobrob-l2-odom`).
 | `loc_square_left` | 4.87 | 4.77 | 7.95 | 7.71 |
 | `loc_square_right` | 4.85 | 4.74 | 6.92 | 6.80 |
 
-Ours is ~2 % longer and turns ~2–3 % more than the robot's own odometry,
-so `wheel_radius` and `wheel_base` are probably slightly off (Q5).
+Ours (nominal ticks) is ~2 % longer and turns ~2–3 % more than the robot's own
+odometry. Lab 2 found the same +2.4 % on both pioneer4 and pioneer5 bags and +3 %
+in a tape-measured 1 m run: the effective rolling radius is smaller than the
+measured one (tyre compression); the wheel base is fine. Answered in Q5.
+
+Loop closure |end − start| [m] after the fix (2026-11-25):
+
+| Bag | robot odom | ticks | ticks calibrated | velocity |
+|---|---|---|---|---|
+| `loc_5m_ret` | 0.340 | 0.432 | 0.054 | 0.068 |
+| `loc_square_left` | 0.032 | 0.200 | 0.077 | 0.074 |
+| `loc_square_right` | 0.052 | 0.121 | 0.005 | 0.017 |

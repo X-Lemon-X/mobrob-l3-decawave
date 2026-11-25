@@ -1,6 +1,6 @@
 # Code
 
-Two ROS 2 packages (colcon workspace = this folder):
+Three ROS 2 packages (colcon workspace = this folder):
 
 - `beacon_localization/` — trilateration from UWB ranges, wheel odometry,
   evaluation and plots. The core is plain Python and also runs without ROS.
@@ -8,6 +8,8 @@ Two ROS 2 packages (colcon workspace = this folder):
   (`Anchor`, `AnchorArray`, `Tag`). Needed for `ros2 bag play` and for the
   node when the original package is not installed. **Do not build it on a
   lab robot that already has its own `decawave_msgs`.**
+- `pioneer_odom/` — the original lab 2 odometry node (for reference; its
+  method is ported into `beacon_localization/odometry.py`).
 
 ## 1. Bags
 
@@ -67,7 +69,7 @@ On the robot set `robot:=pioneerX` to the robot's name.
 | `bag_reader.py` | read `.db3` bags with sqlite3 |
 | `trilateration.py` | linear LS + nonlinear LS solver |
 | `beacon_localizer.py` | skips repeated range sets, calls the solver |
-| `odometry.py` | differential-drive odometry from encoder ticks |
+| `odometry.py` | differential-drive odometry (lab 2): encoder ticks and wheel velocities |
 | `trajectories.py` | builds trajectories of all methods |
 | `evaluation.py` | time matching, rigid alignment, error metrics |
 | `plots.py`, `analyze.py` | figures, `results.md`, CLI |
