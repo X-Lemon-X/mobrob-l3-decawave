@@ -71,7 +71,7 @@ There is no ground truth, so two references are used:
 Metrics: horizontal distance (mean, RMSE, median, 95th percentile, max), static
 spread before motion (precision), closure |end − start| and time lag.
 
-## 3. Results and conclusions
+## 3. Results
 
 RMSE against `tag_pose` [m] (odometry rigid-aligned to `tag_pose`):
 
@@ -95,6 +95,25 @@ Cross-check against our calibrated wheel odometry (independent of UWB):
 ![](results/loc_square_right_xy.png)
 
 
+### Run on the robot (pioneer 2)
+
+`beacon_node` ran live on pioneer 2 for about 40 min (2390 s) of free
+driving with long stops.
+| method | RMSE vs `tag_pose` [m] | median [m] | closure [m] |
+|---|---|---|---|
+| our beacon LS | 0.195 | 0.058 | 1.03 |
+| robot `odom` | 0.209 | 0.080 | 1.20 |
+| ours: ticks | 0.666 | 0.211 | 2.12 |
+| ours: ticks calibrated | 0.594 | 0.271 | 1.84 |
+| ours: velocity | 0.628 | 0.310 | 1.92 |
+
+Before the robot moved (23.5 s), the spread of our fixes was 0.068 m and the
+spread of `tag_pose` was 0.088 m.
+
+![](live/live_xy.png)
+![](live/live_error.png)
+![](live/live_plot_pioneer2.png)
+
 ## 4. Conclusions
 
 1. **Our algorithm works.** It stays within 0.15–0.3 m (RMSE) of the built-in
@@ -104,11 +123,15 @@ Cross-check against our calibrated wheel odometry (independent of UWB):
    the 19 differences above 0.5 m come right after a measurement gap.
 3. **UWB has gaps.** For 1–10 s at a time no new ranges arrive while the
    robot drives up to 1.85 m, so any UWB-only position freezes.
-4. **Odometry is smooth but drifts.** The lab 2 radius calibration works here
-   too: loops close to 0.5–8 cm instead of 12–43 cm. Its low error against
-   `tag_pose` comes from aligning it over the whole run.
-5. **The tag height cannot be measured.** All anchors are at 1.6 m, so z is
+4. **Odometry is smooth but drifts.** On pioneer 4 the lab 2 radius
+   calibration works: loops close to 0.5–8 cm instead of 12–43 cm. On
+   pioneer 2 over 40 min our odometry drifts to 0.6 m RMSE, because the
+   wheel parameters have to be calibrated for each robot.
+5. **The robot run confirms the bag results.** When the robot stands still,
+   our fixes agree with `tag_pose` within about 5 cm, with less spread
+   (0.068 m against 0.088 m). Large differences appear only during motion.
+6. **The tag height cannot be measured.** All anchors are at 1.6 m, so z is
    ambiguous. Fixing it costs little: h from 0 to 0.6 m changes the RMSE by
    1–2 cm.
-6. **Next step:** fuse odometry with the beacon fixes (e.g. a Kalman filter)
+7. **Next step:** fuse odometry with the beacon fixes (e.g. a Kalman filter)
    to bridge the gaps without drift.
